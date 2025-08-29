@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post Test ST9CU Bulan Agustus 2025</title>
+    <!-- Memuat Tailwind CSS dari CDN untuk styling yang cepat dan responsif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Memuat Font Awesome untuk ikon-ikon yang menarik -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Gaya khusus untuk memastikan font yang konsisten */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Gaya untuk layar loading dan modal */
+        #loadingScreen, #confirmModal, #messageModal {
+            transition: opacity 0.5s ease-in-out;
+            opacity: 1;
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+            display: none;
+        }
+
+        /* Gaya untuk modal konfirmasi */
+        #confirmModal {
+            transition: opacity 0.3s ease-in-out;
+            opacity: 1;
+        }
+
+        #confirmModal.hidden {
+            opacity: 0;
+            pointer-events: none;
+            display: none;
+        }
+
+        /* Custom styles for ST9CU logo */
+        .st9cu-logo {
+            font-family: sans-serif;
+            font-weight: 900;
+            font-size: 4rem;
+            line-height: 1;
+            color: #333;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .st9cu-logo span {
+            color: #FFC107;
+        }
+
+        .st9cu-logo-small {
+            font-family: sans-serif;
+            font-weight: 900;
+            font-size: 2rem;
+            line-height: 1;
+            color: #333;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.05);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .st9cu-logo-small span {
+            color: #FFC107;
+        }
+
+        /* Gaya responsif untuk tombol navigasi */
+        @media (max-width: 640px) {
+            #prevBtn, #nextBtn, #finishBtn {
+                padding-left: 1.5rem;
+                padding-right: 1.5rem;
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen font-sans">
+
+    <!-- Layar Loading -->
+    <div id="loadingScreen" class="fixed inset-0 bg-white flex items-center justify-center z-50">
+        <div class="text-center">
+            <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+            <p class="text-gray-600">Memuat kuis...</p>
+        </div>
+    </div>
+
+    <!-- Layar Selamat Datang -->
+    <div id="welcomeScreen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-2xl">
+            <div class="text-center mb-8">
+                <div class="st9cu-logo flex justify-center">ST<span>9</span>CU</div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">Post Test ST9CU Bulan Agustus 2025</h1>
+                <p class="text-gray-600 mb-4">waktunya ST9CU, sdm tiap hari, eksis dengan content Update, daftar dulu yuk!</p>
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <h3 class="font-semibold text-blue-800 mb-2">Informasi Kuis:</h3>
+                    <ul class="text-sm text-blue-700 space-y-1">
+                        <li><i class="fas fa-clock mr-2"></i>Waktu: <span id="timeLimit">60</span> menit</li>
+                        <li><i class="fas fa-question-circle mr-2"></i>Jumlah soal: <span id="totalQuestions">20</span> soal</li>
+                        <li><i class="fas fa-check-circle mr-2"></i>Nilai lulus: <span id="passingScore">75</span>%</li>
+                        <li><i class="fas fa-exclamation-triangle mr-2"></i>Hanya 1 kali kesempatan</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <h3 class="font-semibold text-blue-800 mb-2">Petunjuk Kuis:</h3>
+                <ul class="text-sm text-blue-700 space-y-1 list-disc list-inside">
+                    <li>Kuis ini terdiri dari **20 pertanyaan** pilihan ganda.</li>
+                    <li>Setiap jawaban benar bernilai **5 poin**.</li>
+                    <li>Nilai kelulusan adalah menjawab benar **15 soal** atau mencapai nilai **75 poin**.</li>
+                    <li>Peserta yang lulus berhak mendapatkan sertifikat ST9CU bulan Agustus 2025.</li>
+                    <li>Harap mengisi Nama Lengkap dan NIP dengan benar karena akan digunakan untuk sertifikat Anda.</li>
+                    <li>Pilih jawaban terbaik untuk setiap pertanyaan.</li>
+                </ul>
+            </div>
+
+            <form id="participantForm" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="fullName" class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap *</label>
+                        <input type="text" id="fullName" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Masukkan nama lengkap" required>
+                    </div>
+                    <div>
+                        <label for="nip" class="block text-sm font-medium text-gray-700 mb-2">NIP *</label>
+                        <input type="text" id="nip" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Masukkan NIP" required>
+                    </div>
+                </div>
+                <div>
+                    <label for="institution" class="block text-sm font-medium text-gray-700 mb-2">Instansi *</label>
+                    <input type="text" id="institution" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Masukkan nama instansi" required>
+                </div>
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                    <input type="email" id="email" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-border-transparent" placeholder="Masukkan email (opsional)">
+                </div>
+
+                <div class="flex items-center">
+                    <input type="checkbox" id="agreement" class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded" required>
+                    <label for="agreement" class="ml-2 block text-sm text-gray-700">
+                        Saya telah membaca dan memahami petunjuk pengerjaan kuis
+                    </label>
+                </div>
+
+                <button type="submit" class="w-full bg-indigo-600 text-white py-4 rounded-lg hover:bg-indigo-700 transition duration-200 font-medium text-lg">
+                    <i class="fas fa-play mr-2"></i>Mulai Kuis
+                </button>
+            </form>
+            <div id="participantError" class="mt-4 text-red-600 text-sm text-center hidden"></div>
+        </div>
+    </div>
+
+    <!-- Layar Kuis -->
+    <div id="quizScreen" class="hidden min-h-screen">
+        <!-- Header Kuis -->
+        <header class="bg-white shadow-lg sticky top-0 z-40">
+            <div class="max-w-4xl mx-auto px-4 py-4">
+                <div class="flex flex-col sm:flex-row justify-between items-center sm:space-y-0 space-y-4">
+                    <div class="text-center sm:text-left">
+                        <div class="st9cu-logo-small">ST<span>9</span>CU</div>
+                        <p class="text-sm text-gray-600">Peserta: <span id="participantName"></span></p>
+                    </div>
+                    <div class="text-center sm:text-right">
+                        <div id="timer" class="text-2xl font-bold text-red-600 mb-1">60:00</div>
+                        <div class="text-sm text-gray-600">
+                            Soal <span id="currentQuestion">1</span> dari <span id="totalQuestionsDisplay">20</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="mt-4">
+                    <div class="bg-gray-200 rounded-full h-2">
+                        <div id="progressBar" class="bg-indigo-600 h-2 rounded-full transition-all duration-300" style="width: 5%"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Konten Kuis -->
+        <main class="max-w-4xl mx-auto px-4 py-8">
+            <div id="questionContainer" class="bg-white rounded-xl shadow-lg p-8">
+                <!-- Soal akan dimuat di sini oleh JavaScript -->
+            </div>
+
+            <!-- Tombol Navigasi -->
+            <div class="flex justify-between mt-8">
+                <button id="prevBtn" class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="fas fa-chevron-left mr-2"></i>Sebelumnya
+                </button>
+                <button id="nextBtn" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition duration-200">
+                    Selanjutnya<i class="fas fa-chevron-right ml-2"></i>
+                </button>
+                <button id="finishBtn" class="hidden bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition duration-200">
+                    <i class="fas fa-check mr-2"></i>Selesai
+                </button>
+            </div>
+
+            <!-- Navigasi Soal -->
+            <div class="mt-8 bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4">Navigasi Soal</h3>
+                <div id="questionNav" class="grid grid-cols-5 sm:grid-cols-10 gap-2">
+                    <!-- Tombol navigasi soal akan dibuat di sini -->
+                </div>
+                <div class="mt-4 flex flex-wrap items-center space-x-4 text-sm">
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 bg-green-500 rounded mr-2"></div>
+                        <span>Terjawab</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 bg-blue-500 rounded mr-2"></div>
+                        <span>Sedang dikerjakan</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-4 h-4 bg-gray-300 rounded mr-2"></div>
+                        <span>Belum dijawab</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Layar Hasil -->
+    <div id="resultScreen" class="hidden min-h-screen flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-2xl text-center">
+            <div class="st9cu-logo-small flex justify-center mx-auto mb-4">ST<span>9</span>CU</div>
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Kuis Selesai!</h2>
+
+            <div class="bg-gray-50 rounded-lg p-6 mb-6">
+                <div class="grid grid-cols-2 gap-4 text-center">
+                    <div>
+                        <div class="text-2xl font-bold text-indigo-600" id="finalScore">0/100</div>
+                        <div class="text-sm text-gray-600">Skor</div>
+                    </div>
+                    <div>
+                        <div class="text-2xl font-bold text-green-600" id="finalPercentage">0%</div>
+                        <div class="text-sm text-gray-600">Persentase</div>
+                    </div>
+                </div>
+
+                <div class="mt-4 pt-4 border-t border-gray-200">
+                    <div class="text-lg font-semibold" id="resultStatus">Status: Lulus</div>
+                    <div class="text-sm text-gray-600 mt-2" id="resultMessage">
+                        Selamat! Anda telah menyelesaikan kuis dengan baik.
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3">
+                <button onclick="printResult()" class="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition duration-200">
+                    <i class="fas fa-print mr-2"></i>Cetak Hasil
+                </button>
+                <button onclick="restartQuiz()" class="w-full bg-gray-500 text-white py-3 rounded-lg hover:bg-gray-600 transition duration-200">
+                    <i class="fas fa-redo mr-2"></i>Kembali ke Beranda
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Konfirmasi -->
+    <div id="confirmModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md mx-4">
+            <div class="text-center">
+                <i class="fas fa-exclamation-triangle text-4xl text-yellow-500 mb-4 animate-pulse"></i>
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Konfirmasi</h3>
+                <p class="text-gray-600 mb-6" id="confirmMessage">Apakah Anda yakin ingin menyelesaikan kuis?</p>
+                <div class="flex space-x-4">
+                    <button onclick="closeConfirmModal()" class="flex-1 bg-gray-500 text-white py-2 rounded-lg hover:bg-gray-600 transition duration-200">
+                        Batal
+                    </button>
+                    <button id="confirmBtn" class="flex-1 bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition duration-200">
+                        Ya, Selesai
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal Pesan -->
+    <div id="messageModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md mx-4">
+            <div class="text-center">
+                <i class="fas fa-info-circle text-4xl text-blue-500 mb-4"></i>
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Informasi</h3>
+                <p class="text-gray-600 mb-6" id="messageText"></p>
+                <button onclick="closeMessageModal()" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200">
+                    Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sisi klien JavaScript
+        // Konstanta yang bisa diatur
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzKyGPERPyZbpuD6-hi16kz8_xbXuUuHFf1TD67KcEdJZFMaHh_zohMofmPp0IXqLKv/exec';
+        const TOTAL_QUESTIONS = 20;
+        const POINTS_PER_QUESTION = 5;
+        const PASSING_SCORE = 75; // 15 soal benar * 5 poin
+
+        // Variabel global untuk menyimpan data kuis
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let answers = [];
+        let timeRemaining = 3600; // 60 menit dalam detik
+        let timerInterval;
+        let startTime;
+        let participantData = {};
+        let isFetching = false;
+        let quizKey = null; // Key untuk validasi keamanan
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadQuizData();
+        });
+
+        // Fungsi untuk mengambil data kuis dari Google Apps Script
+        async function loadQuizData() {
+            if (isFetching) return;
+            isFetching = true;
+            try {
+                const response = await fetch(`${API_URL}?action=getQuestions`);
+                const data = await response.json();
+
+                if (data.success && data.questions.length > 0) {
+                    questions = data.questions;
+                    quizKey = data.quizKey; // Simpan kunci unik dari server
+
+                    const settingsResponse = await fetch(`${API_URL}?action=getSettings`);
+                    const settingsData = await settingsResponse.json();
+
+                    if (settingsData.success) {
+                        updateQuizSettings(settingsData.settings);
+                    }
+
+                    answers = new Array(questions.length).fill(null);
+                    
+                    document.getElementById('totalQuestions').textContent = questions.length;
+                    document.getElementById('totalQuestionsDisplay').textContent = questions.length;
+                    document.getElementById('passingScore').textContent = PASSING_SCORE;
+
+                    document.getElementById('loadingScreen').classList.add('hidden');
+                    document.getElementById('welcomeScreen').classList.remove('hidden');
+                } else {
+                    throw new Error('Gagal memuat soal kuis.');
+                }
+            } catch (error) {
+                console.error('Error loading quiz data:', error);
+                showModal('Gagal memuat data kuis. Silakan refresh halaman.');
+            } finally {
+                isFetching = false;
+            }
+        }
+
+        // Memperbarui informasi kuis di layar selamat datang
+        function updateQuizSettings(settings) {
+            if (settings.time_limit) {
+                timeRemaining = parseInt(settings.time_limit) * 60;
+                document.getElementById('timeLimit').textContent = settings.time_limit;
+                document.getElementById('timer').textContent = `${settings.time_limit.toString().padStart(2, '0')}:00`;
+            }
+        }
+
+        // Menangani pengiriman formulir peserta
+        document.getElementById('participantForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const fullName = document.getElementById('fullName').value.trim();
+            const nip = document.getElementById('nip').value.trim();
+            const institution = document.getElementById('institution').value.trim();
+            const email = document.getElementById('email').value.trim();
+
+            if (!fullName || !nip || !institution) {
+                showError('Semua field yang wajib harus diisi!');
+                return;
+            }
+
+            participantData = {
+                fullName,
+                nip,
+                institution,
+                email
+            };
+
+            startQuiz();
+        });
+
+        // Memulai kuis
+        function startQuiz() {
+            startTime = new Date().toISOString();
+
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.remove('hidden');
+
+            document.getElementById('participantName').textContent = participantData.fullName;
+
+            generateQuestionNavigation();
+            loadQuestion(0);
+            startTimer();
+            setupNavigationButtons();
+        }
+
+        // Membuat tombol navigasi soal
+        function generateQuestionNavigation() {
+            const navContainer = document.getElementById('questionNav');
+            navContainer.innerHTML = '';
+
+            for (let i = 0; i < questions.length; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'w-10 h-10 rounded border-2 border-gray-300 bg-gray-100 hover:bg-gray-200 transition duration-200 text-sm font-medium';
+                btn.textContent = i + 1;
+                btn.onclick = () => loadQuestion(i);
+                btn.id = `nav-btn-${i}`;
+                navContainer.appendChild(btn);
+            }
+        }
+
+        // Memuat soal berdasarkan indeks
+        function loadQuestion(index) {
+            if (index < 0 || index >= questions.length) return;
+            
+            // Perbarui warna tombol navigasi sebelumnya
+            const prevNavBtn = document.getElementById(`nav-btn-${currentQuestionIndex}`);
+            if (prevNavBtn) {
+                if (answers[currentQuestionIndex] !== null) {
+                    prevNavBtn.className = 'w-10 h-10 rounded border-2 border-green-500 bg-green-500 text-white font-medium';
+                } else {
+                    prevNavBtn.className = 'w-10 h-10 rounded border-2 border-gray-300 bg-gray-100 hover:bg-gray-200 transition duration-200 text-sm font-medium';
+                }
+            }
+
+            currentQuestionIndex = index;
+            const question = questions[index];
+            
+            document.getElementById('currentQuestion').textContent = index + 1;
+            
+            const progress = ((index + 1) / questions.length) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            const questionHTML = `
+                <div class="mb-6">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                        Soal ${index + 1}
+                    </h3>
+                    <p class="text-lg text-gray-700 leading-relaxed mb-6">${question.question}</p>
+                </div>
+                
+                <div class="space-y-3">
+                    <label class="flex items-start p-4 border-2 border-gray-200 rounded-lg hover:border-indigo-300 cursor-pointer transition duration-200">
+                        <input type="radio" name="answer" value="A" class="mt-1 mr-4" ${answers[index] === 'A' ? 'checked' : ''}>
+                        <span class="text-gray-800">A. ${question.optionA}</span>
+                    </label>
+                    
+                    <label class="flex items-start p-4 border-2 border-gray-200 rounded-lg hover:border-indigo-300 cursor-pointer transition duration-200">
+                        <input type="radio" name="answer" value="B" class="mt-1 mr-4" ${answers[index] === 'B' ? 'checked' : ''}>
+                        <span class="text-gray-800">B. ${question.optionB}</span>
+                    </label>
+                    
+                    <label class="flex items-start p-4 border-2 border-gray-200 rounded-lg hover:border-indigo-300 cursor-pointer transition duration-200">
+                        <input type="radio" name="answer" value="C" class="mt-1 mr-4" ${answers[index] === 'C' ? 'checked' : ''}>
+                        <span class="text-gray-800">C. ${question.optionC}</span>
+                    </label>
+                    
+                    <label class="flex items-start p-4 border-2 border-gray-200 rounded-lg hover:border-indigo-300 cursor-pointer transition duration-200">
+                        <input type="radio" name="answer" value="D" class="mt-1 mr-4" ${answers[index] === 'D' ? 'checked' : ''}>
+                        <span class="text-gray-800">D. ${question.optionD}</span>
+                    </label>
+                </div>
+            `;
+            
+            document.getElementById('questionContainer').innerHTML = questionHTML;
+            
+            const radioButtons = document.querySelectorAll('input[name="answer"]');
+            radioButtons.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    answers[currentQuestionIndex] = this.value;
+                    updateQuestionNavigationColors();
+                    updateAnswerDisplay();
+                });
+            });
+            
+            updateNavigationButtons();
+            updateQuestionNavigationColors();
+            updateAnswerDisplay();
+        }
+
+        // Memperbarui tampilan jawaban yang dipilih
+        function updateAnswerDisplay() {
+            const labels = document.querySelectorAll('#questionContainer label');
+            labels.forEach(label => {
+                const radio = label.querySelector('input[type="radio"]');
+                if (radio.checked) {
+                    label.classList.add('border-indigo-500', 'bg-indigo-50');
+                    label.classList.remove('border-gray-200', 'bg-white');
+                } else {
+                    label.classList.remove('border-indigo-500', 'bg-indigo-50');
+                    label.classList.add('border-gray-200', 'bg-white');
+                }
+            });
+        }
+
+        // Memperbarui warna tombol navigasi soal
+        function updateQuestionNavigationColors() {
+            const navButtons = document.querySelectorAll('#questionNav button');
+            navButtons.forEach((btn, i) => {
+                if (i === currentQuestionIndex) {
+                    btn.className = 'w-10 h-10 rounded border-2 border-blue-500 bg-blue-500 text-white font-medium';
+                } else if (answers[i] !== null) {
+                    btn.className = 'w-10 h-10 rounded border-2 border-green-500 bg-green-500 text-white font-medium';
+                } else {
+                    btn.className = 'w-10 h-10 rounded border-2 border-gray-300 bg-gray-100 hover:bg-gray-200 transition duration-200 text-sm font-medium';
+                }
+            });
+        }
+
+        // Menyiapkan event listener untuk tombol navigasi
+        function setupNavigationButtons() {
+            document.getElementById('prevBtn').addEventListener('click', function() {
+                loadQuestion(currentQuestionIndex - 1);
+            });
+            
+            document.getElementById('nextBtn').addEventListener('click', function() {
+                loadQuestion(currentQuestionIndex + 1);
+            });
+            
+            document.getElementById('finishBtn').addEventListener('click', function() {
+                showConfirmModal();
+            });
+        }
+
+        // Memperbarui status tombol navigasi
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const finishBtn = document.getElementById('finishBtn');
+            
+            prevBtn.disabled = currentQuestionIndex === 0;
+            
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.classList.add('hidden');
+                finishBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                finishBtn.classList.add('hidden');
+            }
+        }
+
+        // Memulai hitungan mundur
+        function startTimer() {
+            timerInterval = setInterval(function() {
+                timeRemaining--;
+                
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                
+                document.getElementById('timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                if (timeRemaining <= 300) { // 5 menit terakhir
+                    document.getElementById('timer').className = 'text-2xl font-bold text-red-600 mb-1 animate-pulse';
+                }
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    submitQuiz(true); // Kirim otomatis saat waktu habis
+                }
+            }, 1000);
+        }
+
+        // Menampilkan modal konfirmasi
+        function showConfirmModal() {
+            const unanswered = answers.filter(answer => answer === null).length;
+            
+            let message = 'Apakah Anda yakin ingin menyelesaikan kuis?';
+            if (unanswered > 0) {
+                message = `Masih ada ${unanswered} soal yang belum dijawab. Apakah Anda yakin ingin menyelesaikan kuis?`;
+            }
+            
+            document.getElementById('confirmMessage').textContent = message;
+            document.getElementById('confirmModal').classList.remove('hidden');
+            
+            document.getElementById('confirmBtn').onclick = function() {
+                closeConfirmModal();
+                submitQuiz(false);
+            };
+        }
+
+        // Menutup modal konfirmasi
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.add('hidden');
+        }
+
+        // Menampilkan modal pesan
+        function showModal(message) {
+            document.getElementById('messageText').textContent = message;
+            document.getElementById('messageModal').classList.remove('hidden');
+        }
+
+        // Menutup modal pesan
+        function closeMessageModal() {
+            document.getElementById('messageModal').classList.add('hidden');
+        }
+
+        // Mengirimkan hasil kuis ke Google Apps Script
+        async function submitQuiz(timeUp = false) {
+            clearInterval(timerInterval);
+            
+            document.getElementById('loadingScreen').classList.remove('hidden');
+            document.getElementById('quizScreen').classList.add('hidden');
+
+            try {
+                const submissionData = {
+                    action: 'submitQuiz',
+                    ...participantData,
+                    answers: JSON.stringify(answers),
+                    startTime: startTime,
+                    endTime: new Date().toISOString(),
+                    timeUp: timeUp,
+                    quizKey: quizKey,
+                    browserInfo: navigator.userAgent
+                };
+                
+                const formData = new FormData();
+                Object.keys(submissionData).forEach(key => {
+                    formData.append(key, submissionData[key]);
+                });
+                
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showResult(result.score, result.percentage, result.totalQuestions, timeUp);
+                } else {
+                    throw new Error(result.error || 'Gagal menyimpan hasil kuis');
+                }
+            } catch (error) {
+                console.error('Error submitting quiz:', error);
+                showModal('Terjadi kesalahan saat menyimpan hasil. Silakan coba lagi.');
+                document.getElementById('loadingScreen').classList.add('hidden');
+            }
+        }
+
+        // Menampilkan layar hasil
+        function showResult(score, percentage, totalQuestions, timeUp = false) {
+            document.getElementById('loadingScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            
+            const maxScore = totalQuestions * POINTS_PER_QUESTION;
+
+            document.getElementById('finalScore').textContent = `${score}/${maxScore}`;
+            document.getElementById('finalPercentage').textContent = `${percentage}%`;
+            
+            const statusElement = document.getElementById('resultStatus');
+            const messageElement = document.getElementById('resultMessage');
+            
+            const logoElement = document.querySelector('#resultScreen .st9cu-logo-small');
+            logoElement.style.display = 'block';
+
+            if (score >= PASSING_SCORE) {
+                statusElement.textContent = 'Status: LULUS';
+                statusElement.className = 'text-lg font-semibold text-green-600';
+                messageElement.textContent = 'Selamat! Anda telah lulus kuis dengan baik.';
+            } else {
+                statusElement.textContent = 'Status: TIDAK LULUS';
+                statusElement.className = 'text-lg font-semibold text-red-600';
+                messageElement.textContent = 'Maaf, Anda belum mencapai nilai minimum untuk lulus.';
+            }
+            
+            if (timeUp) {
+                messageElement.textContent += ' Waktu pengerjaan telah habis.';
+            }
+        }
+
+        // Mencetak hasil kuis
+        function printResult() {
+            window.print();
+        }
+
+        // Memulai ulang kuis
+        function restartQuiz() {
+            location.reload();
+        }
+
+        // Menampilkan pesan kesalahan
+        function showError(message) {
+            const errorElement = document.getElementById('participantError');
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+            
+            setTimeout(() => {
+                errorElement.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Kode Google Apps Script untuk Backend
+        // Salin dan tempel kode ini ke dalam proyek Google Apps Script Anda
+        // File Apps Script: Kode.gs
+        /*
+        function doGet(e) {
+          const sheetId = '19dxJaglnuC7YqPVtoGlYB_RiZvt_8c1d7PB4LKP-Qm8'; // Ganti dengan ID Spreadsheet Anda
+          const ss = SpreadsheetApp.openById(sheetId);
+          const params = e.parameter;
+
+          if (params.action == 'getQuestions') {
+            const questionsSheet = ss.getSheetByName('Questions');
+            const data = questionsSheet.getRange('A2:J' + questionsSheet.getLastRow()).getValues();
+            const questions = data.slice(1).map(row => ({
+                question: row[1],
+                optionA: row[2],
+                optionB: row[3],
+                optionC: row[4],
+                optionD: row[5],
+                correctAnswer: row[6].toString().trim().toUpperCase(),
+                points: parseInt(row[9])
+            }));
+            
+            const selectedQuestions = questions.slice(0, 20); 
+            selectedQuestions.sort(() => Math.random() - 0.5); 
+            
+            const cache = CacheService.getScriptCache();
+            const quizKey = Utilities.getUuid();
+            const questionsForCache = selectedQuestions.map(q => ({
+                correctAnswer: q.correctAnswer,
+                points: q.points
+            }));
+            cache.put(quizKey, JSON.stringify(questionsForCache), 600);
+
+            const questionsForFrontend = selectedQuestions.map(q => {
+              const { correctAnswer, points, ...rest } = q;
+              return rest;
+            });
+
+            return ContentService.createTextOutput(JSON.stringify({ success: true, questions: questionsForFrontend, quizKey: quizKey })).setMimeType(ContentService.MimeType.JSON);
+          
+          } else if (params.action == 'getSettings') {
+            const settingsSheet = ss.getSheetByName('Settings');
+            const settings = {};
+            settingsSheet.getDataRange().getValues().slice(1).forEach(row => {
+                settings[row[0]] = row[1];
+            });
+            return ContentService.createTextOutput(JSON.stringify({ success: true, settings: settings })).setMimeType(ContentService.MimeType.JSON);
+          }
+        }
+
+        function doPost(e) {
+          const sheetId = '19dxJaglnuC7YqPVtoGlYB_RiZvt_8c1d7PB4LKP-Qm8';
+          const ss = SpreadsheetApp.openById(sheetId);
+          const resultSheet = ss.getSheetByName('Results');
+          
+          const params = e.parameter;
+          
+          if (params.action == 'submitQuiz') {
+            const participantData = {
+              fullName: params.fullName,
+              nip: params.nip,
+              institution: params.institution,
+              email: params.email,
+              startTime: params.startTime,
+              endTime: params.endTime,
+              timeUp: params.timeUp === 'true',
+              browserInfo: params.browserInfo
+            };
+
+            const answers = JSON.parse(params.answers);
+
+            const cache = CacheService.getScriptCache();
+            const cachedAnswers = cache.get(params.quizKey);
+            
+            if (!cachedAnswers) {
+              return ContentService.createTextOutput(JSON.stringify({ success: false, error: 'Kunci kuis tidak valid atau kadaluarsa.' })).setMimeType(ContentService.MimeType.JSON);
+            }
+
+            const correctAnswersData = JSON.parse(cachedAnswers);
+            const totalQuestions = correctAnswersData.length;
+            const passingScore = parseInt(getSettingsFromSheet(ss.getSheetByName('Settings')).passing_score);
+            let score = 0;
+            let correctCount = 0;
+            
+            for (let i = 0; i < answers.length && i < correctAnswersData.length; i++) {
+              if (answers[i] && answers[i].toString().trim().toUpperCase() === correctAnswersData[i].correctAnswer.toString().trim().toUpperCase()) {
+                correctCount++;
+                score += correctAnswersData[i].points;
+              }
+            }
+
+            const percentage = Math.round((score / (totalQuestions * 5)) * 100);
+
+            let status = score >= passingScore ? 'LULUS' : 'TIDAK LULUS';
+            if (participantData.timeUp) {
+                status = 'TIDAK LULUS (Waktu Habis)';
+            }
+            
+            const startTimeDate = new Date(participantData.startTime);
+            const completedAt = new Date(participantData.endTime);
+            const durationMinutes = Math.round((completedAt - startTimeDate) / (1000 * 60));
+
+            const row = [
+              participantData.fullName,
+              participantData.nip,
+              participantData.institution,
+              participantData.email,
+              score,
+              correctCount, 
+              percentage + '%',
+              startTimeDate,
+              completedAt,
+              durationMinutes,
+              status,
+              JSON.stringify(answers),
+              'N/A',
+              participantData.browserInfo,
+              new Date()
+            ];
+
+            resultSheet.appendRow(row);
+            
+            return ContentService.createTextOutput(JSON.stringify({ success: true, score: score, percentage: percentage, totalQuestions: totalQuestions })).setMimeType(ContentService.MimeType.JSON);
+          }
+        }
+        
+        // Fungsi pembantu untuk membuat respons API yang konsisten
+        function createResponse(data) {
+          return ContentService
+            .createTextOutput(JSON.stringify(data))
+            .setMimeType(ContentService.MimeType.JSON);
+        }
+
+        function getSettingsFromSheet(sheet) {
+          const data = sheet.getDataRange().getValues();
+          const settings = {};
+          for (let i = 1; i < data.length; i++) {
+            settings[data[i][0]] = data[i][1];
+          }
+          return settings;
+        }
+
+        // ... (Fungsi lain yang tidak perlu diubah)
+        */
+    </script>
+</body>
+</html>
